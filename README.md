@@ -18,7 +18,7 @@ As a convenience, the lock objects are provided on a single namespace, `lockfn`.
 ---------------------------------------------------------
 #### <a id="install"></a>INSTALL:
 
-json-local may be downloaded directly or installed through `npm`.
+lockfn may be downloaded directly or installed through `npm`.
 
  * **npm**   
 
