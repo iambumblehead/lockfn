@@ -20,13 +20,13 @@ json-local may be downloaded directly or installed through `npm`.
  * **npm**   
 
  ```bash
- $ npm install fnlock
+ $ npm install lockfn
  ```
 
  * **Direct Download**
  
  ```bash  
- $ git clone https://github.com/iambumblehead/fnlock.git
+ $ git clone https://github.com/iambumblehead/lockfn.git
  ```
 
 ---------------------------------------------------------
