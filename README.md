@@ -4,7 +4,7 @@ lockfn
 
 ### OVERVIEW:
 
-A collection of function locking objects. Each object returns a function through which asynchronous code may be executed. The [examples](#objects) are more descriptive than any explanation that would be provided here.
+A collection of function locking objects. Each object returns a function through which asynchronous code may be executed. The [examples](#objects) are more descriptive than any explanation alone.
 
  * `LockFn.Queuing`, _LockFnQueuing_
  * `LockFn.Caching`, _LockFnCaching_
