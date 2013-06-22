@@ -20,5 +20,5 @@
         "test" : "node node_modules/jasmine-node/bin/jasmine-node --verbose test/"
     },
     "readmeFilename": "README.md",
-    "description": "Collection of function locking methods."
+    "description": "Collection of function locking objects."
 }
