@@ -1,5 +1,5 @@
 // Filename: LockFn.js
-// Timestamp: 2013.06.21-23:57:26 (last modified)  
+// Timestamp: 2013.06.22-01:34:33 (last modified)  
 // Author(s): Bumblehead (www.bumblehead.com)
 // Requires: 
 
@@ -12,10 +12,10 @@ var LockFn =
   ((typeof module === 'object') ? module : {}).exports = (function () {
 
   return {
-    getQueuing : LockFnQueuing.getNew,
-    getCaching : LockFnCaching.getNew,
-    getRebounding : LockFnRebounding.getNew,
-    getThrottling : LockFnThrottling.getNew
+    Queuing : LockFnQueuing,
+    Caching : LockFnCaching,
+    Rebounding : LockFnRebounding,
+    Throttling : LockFnThrottling
   };
 
 }());
