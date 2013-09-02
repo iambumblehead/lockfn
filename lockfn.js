@@ -1,21 +1,22 @@
 // Filename: LockFn.js
-// Timestamp: 2013.06.22-01:34:33 (last modified)  
+// Timestamp: 2013.09.01-22:31:21 (last modified)  
 // Author(s): Bumblehead (www.bumblehead.com)
-// Requires: 
+// Requires: lockfncaching.js, lockfnqueuing.js, 
+// lockfnrebounding.js, lockfnthrottling.js
 
-var LockFnCaching = require('./lib/lockfncaching');
-var LockFnQueuing = require('./lib/lockfnqueuing');
-var LockFnRebounding = require('./lib/lockfnrebounding');
-var LockFnThrottling = require('./lib/lockfnthrottling');
+var lockfncaching = require('./lib/lockfncaching');
+var lockfnqueuing = require('./lib/lockfnqueuing');
+var lockfnrebounding = require('./lib/lockfnrebounding');
+var lockfnthrottling = require('./lib/lockfnthrottling');
 
-var LockFn =
+var lockfn =
   ((typeof module === 'object') ? module : {}).exports = (function () {
 
   return {
-    Queuing : LockFnQueuing,
-    Caching : LockFnCaching,
-    Rebounding : LockFnRebounding,
-    Throttling : LockFnThrottling
+    Queuing : lockfnqueuing,
+    Caching : lockfncaching,
+    Rebounding : lockfnrebounding,
+    Throttling : lockfnthrottling
   };
 
 }());

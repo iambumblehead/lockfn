@@ -1,11 +1,12 @@
 {
     "name": "lockfn",
-    "version": "0.0.02",
+    "version": "0.0.3",
     "repository": {
         "type": "git",
         "url": "https://github.com/iambumblehead/lockfn.git"
     },
     "keywords": [
+        "debounce",
         "lock",
         "function",
         "queue",
