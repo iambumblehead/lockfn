@@ -1,5 +1,5 @@
-// Filename: LockFn.js
-// Timestamp: 2013.09.01-22:31:21 (last modified)  
+// Filename: lockfn.js
+// Timestamp: 2013.09.05-19:26:00 (last modified)  
 // Author(s): Bumblehead (www.bumblehead.com)
 // Requires: lockfncaching.js, lockfnqueuing.js, 
 // lockfnrebounding.js, lockfnthrottling.js
