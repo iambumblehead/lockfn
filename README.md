@@ -92,7 +92,7 @@ lockfn may be downloaded directly or installed through `npm`.
 
  ```javascript
  fn = function (err, val) { console.log(null, val); };     
- lockFnRebounding = lockfnrebounding.getNamespaceNew();     
+ lockFnRebounding = lockfnrebounding.getNew();     
  lockFnRebounding(function (exitFn) {
      setTimeout(function () { 
          console.log('submit one'); exitFn() 
