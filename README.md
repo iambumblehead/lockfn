@@ -124,6 +124,8 @@ lockfn may be downloaded directly or installed through `npm`.
 
 #### <a id="license">License:
 
+![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png) 
+
 (The MIT License)
 
 Copyright (c) 2013 [Bumblehead][0] <chris@bumblehead.com>
