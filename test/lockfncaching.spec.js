@@ -1,5 +1,5 @@
 // Filename: lockfncaching.spec.js  
-// Timestamp: 2015.04.10-17:14:40 (last modified)  
+// Timestamp: 2015.04.11-03:30:01 (last modified)  
 // Author(s): Bumblehead (www.bumblehead.com)  
 
 var lockfncaching = require('../lib/lockfncaching');
@@ -72,7 +72,7 @@ describe("lockfncaching", function () {
     });
 
     // reset the lock on this function
-    fncaching.lock = lockfncaching.getNew();
+    fncaching.clear();
     fncaching(_, _, 'b2', function onval (err, res) {
       onvalcallcount++;
       if (res !== 'doneb2') invalidresult = true;
@@ -210,15 +210,12 @@ describe("lockfncaching.namespace", function () {
     });
 
 
-    fncaching.lock = lockfncaching.getNamespaceNew();
+    fncaching.clear();
+    //fncaching.lock = lockfncaching.getNamespaceNew();
 
     setTimeout(function () {    
-      //expect( onvalcallcount ).toBe( 3 );      
-      //expect( getvalcallcount ).toBe( 2 );      
-
       expect( onvalcallcount ).toBe( 6 );      
       expect( getvalcallcount ).toBe( 4 );      
-
       expect( invalidresult ).toBe( false );      
       done();
     }, 800);

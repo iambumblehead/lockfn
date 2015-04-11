@@ -1,186 +1,202 @@
 lockfn
 ======
-**(c)[Bumblehead][0], 2013** [MIT-license](#license)
+**(c)[Bumblehead][0], 2013,2014,2015** [MIT-license](#license)
 
-### OVERVIEW:
+## OVERVIEW:
 
-A collection of function locking objects. Each object returns a function through which asynchronous code may be executed. The [examples](#objects) are more descriptive than any explanation alone.
+A collection of function locks. Each returns a function through which asynchronous code may be controlled. 
 
- * `lockfn.queuing`
- * `lockfn.caching`
- * `lockfn.rebounding`
- * `lockfn.throttling`
-
-As a convenience, the lock definitions are provided on a single namespace, `lockfn`. They could be used independently, but usually one and all are needed within the same application.
-
-The default function defined on each lock is a convenient '_default_' function which should serve most purposes and allow one to use a lock with fewer lines of code.
+ * [`lockfn.queuing`](#queuing)
+ * [`lockfn.caching`](#caching)
+ * [`lockfn.rebounding`](#rebounding)
+ * [`lockfn.throttling`](#throttling)
 
 [0]: http://www.bumblehead.com                            "bumblehead"
 
 ---------------------------------------------------------
-#### <a id="install"></a>INSTALL:
-
-lockfn may be downloaded directly or installed through `npm`.
+### <a id="install"></a>INSTALL:
 
 **npm**
-
 ```bash
 $ npm install lockfn
 ```
 
-**Direct Download**
- 
+**direct download**
 ```bash
 $ git clone https://github.com/iambumblehead/lockfn.git
 ```
 
 ---------------------------------------------------------
-#### <a id="objects">OBJECTS:
+### <a id="objects"></a>Objects:
 
- - **lockfn.queuing**
-   a returned function will store mulitple callbacks and processes them one after another -waiting for the first to complete before calling the next. 'useful for holding off execution of function bodies that would add numerous calls to the stack.
+ - <a id="caching"></a>**lockfn.caching**
+   Most common lock. Obtain data _once_ for multiple callers.
 
-  the following would print `15`, then `10`:
+   A template applied to each item of a list view will be requested _once only_:
+   ```javascript
+   gettpl = function (tplname, fn) {
+     server_request(tplname, function (err, tpl) {
+        fn(err, tpl); // tpl is '<b>tpl</b>'
+     });
+   };
+   gettplcache = lockfn.caching(function (tplname, fn) {
+     gettpl(tplname, fn)
+   };
+   gettplcache('listitem.mustache', function (err, tpl) {
+     console.log('tpl is ' + tpl);        // tpl is <b>item</b>
+   });
+   gettplcache('listitem.mustache', function (err, tplcached) {
+     console.log('tpl is ' + tplcached);  // tpl is <b>item</b>
+   });
+   ```
 
+   This list uses different templates and _unique_ templates are requested _once only_:
+   ```javascript
+   // difference between lockfn.caching and lockfn.caching.namespace...
+   //
+   //   lockfn.caching: the first value obtained is returned to all callers.
+   //   if 'lakelistitem.mustache' is obtained first, it is returned to all
+   //   callers.
+   //
+   //   lockfn.caching.namespace: applies caching to values unique to string
+   //   param given before the callback. Here 'lakelistitem.mustache' returns a
+   //   cached value to calls for 'lakelistitem.mustache'. A different value is
+   //   requested and cached for 'countrylistitem.mustache':
+   gettplcache = lockfn.caching.namespace(function (tplname, fn) {
+     gettpl(tplname, fn)
+   };
+   gettplcache('lakelistitem.mustache', function (err, tpl) {
+     console.log('tpl is ' + tpl);       // tpl is <b>lake</b>
+   });
+   gettplcache('lakelistitem.mustache', function (err, tplcached) {
+     console.log('tpl is ' + tplcached); // tpl is <b>lake</b>
+   });
+   gettplcache('countrylistitem.mustache', function (err, ctpl) {
+     console.log('tpl is ' + tpl);       // tpl is <b>country</b>
+   });
+   gettplcache('countrylistitem.mustache', function (err, ctplcached) {
+     console.log('tpl is ' + tplcached); // tpl is <b>country</b>
+   });
+   ```
+ 
+   Use multiple params with functions returned by `lockfn.caching` and `lockfn.caching.namespace`. Both require a callback as _last_ parameter. `lockfn.caching.namespace` requires a string as the _second-to-last_  parameter (a namespace for which the cache is held).
+   ```javascript
+   gettplcache = lockfn.caching.namespace(function (session, cfg, tplname, fn) {
+     gettpl(tplname, fn)
+   };
+   gettplcache(session, cfg, 'nav.mustache', function (err, tpl) {
+     console.log('tpl is ' + tpl);      // tpl is <b>nav</b>
+   });
+   gettplcache(session, cfg, 'nav.mustache', function (err, tplcache) {
+     console.log('tpl is ' + tplcache); // tpl is <b>nav</b>
+   });
+   gettplcache(session, cfg, 'foot.mustache', function (err, tplcache) {
+     console.log('tpl is ' + tplcache); // tpl is <b>foot</b>
+   });
+   ```
+
+   Clear the cache and request the template anew
+   ```javascript
+   gettplcache = lockfn.caching.namespace(function (session, cfg, tplname, fn) {
+     gettpl(tplname, fn)
+   };
+   session = 'english';
+   gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
+     console.log(tpl);      // <b>i need the bathroom</b>
+   });
+   session = 'spanish';
+   gettplcache(session, cfg, 'bathroom.mustache', function (err, tplcache) {
+     console.log(tplcache); // <b>i need the bathroom</b>
+   });
+   gettplcache.clear();
+   gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
+     console.log(tpl);      // <b>puedo ir al bano</b>
+   });
+   session = 'english';
+   gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
+     console.log(tpl);      // <b>puedo ir al bano</b>
+   });
+   ```
+
+ - <a id="queuing"></a>**lockfn.queuing**
+   Avoid stack overflow. Control caller access to a function that adds numerous frames to the stack by queuing calls so each completes before next begins:
   ```javascript
-  fn = function onval (err, res) { console.log(res); };
-  lock = lockfn.queuing.getNew();
-  lock(fn, function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 15); }, 200);
+  getdecryptedblobqueue = lockfn.queuing(function (cipher, fn) {
+    fn(null, busydecryption(cipher)); // busydecryption adds numerous frames
   });
-  lock(fn, function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 10); }, 200);
+  getdecryptedblobqueue(cipher, function (plain) {
+    console.log(plain); // long string
   });
-  ```
-
-  ... and _default_ use assumes 'onval' function never changes
-  ```javascript
-  lock = lockfn.queuing(function (res) { console.log(res); });
-  lock(function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 15); }, 200);
-  });
-  lock(function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 10); }, 200);
+  getdecryptedblobqueue(cipher, function (plain) {
+    console.log(plain); // long string
   }); 
   ```
- 
- - **lockfn.rebounding**
-   a returned function will process one callback and during that time, future calls are rebounded until the callback has returned a value. 'useful for handling form submission events, where the form should be submitted once only amid multiple submission calls.
 
-  the following would print `submit one`, only.
-
+  Like [`lockfn.caching`](#caching), a callback is required as the _last_ parameter. Other params given in calls to the lock are passed to the function the lock was constructed around.
   ```javascript
-  lock = lockfn.rebounding.getNew();
-  lock(function getval (exitFn) {
+  getdecryptedblobqueue = lockfn.queuing(function (cipher, key, type, fn) {
+    fn(null, busydecryption(cipher, key, type));
+  });
+  getdecryptedblobqueue(cipher, key, type, function (plain) {
+    console.log(plain); // long string
+  });
+  ```
+ 
+ - <a id="rebounding"></a>**lockfn.rebounding**
+   A returned function handles one call, ignoring other calls until the first returns. Useful for handling form submit events, where a form should be submitted once only amid multiple submit events.
+  ```javascript
+  // the following would print 'submit one' only
+  lockrebound = lockfn.rebounding();
+  lockrebound(function (exitfn) {
     setTimeout(function () { 
-      console.log('submit one'); exitFn() 
+      console.log('submit one');  // submit one
+      exitfn() 
     }, 200);
   });
-  lock(function getval (exitFn) {
+  lockrebound(function (exitfn) {
     setTimeout(function () { 
-      console.log('submit two'); exitFn() 
+      console.log('submit two');
+      exitfn() 
     }, 100);
   }); 
-  lock(function getval (exitFn) {
-    console.log('submit three'); exitFn() 
+  lockrebound(function (exitfn) {
+    console.log('submit three');
+    exitfn() 
   });
   ```
 
-  ... and _default_ use is same. lockfn.rebounding.getNew() is no different from lockfn.rebounding().
-  ```javascript
-  lock = lockfn.rebounding();
-  lock(function getval (exitFn) {
-    // ...
-  });
-  ```
+ - <a id="throttling"></a>**lockfn.throttling**
+   A returned function handles first and last calls made within a specified amount of time. Other calls during that time are ignored. Limit calls which may be triggered rapidly many times. For example ,
 
- - **lockfn.throttling**
- a returned function will process one callback and during a specified period of time, then it will process the last callback received during that time. 'useful for limiting the execution of functions bound to events triggered rapidly many times.
-
- the following would print `go`, then `now`: 
- 
-  ```javascript 
-  lock = lockfn.throttling.getNew({ ms : 500 });
-  lock(function () { console.log('go') });
-  lock(function () { console.log('home') }); 
-  lock(function () { console.log('now') });
-  ```
-
-  ... and _default_ use is same. lockfn.throttling.getNew() is no different from lockfn.rebounding().
-  ```javascript
-  lock = lockfn.throttling({ ms : 500 });
-  lock(function getval (exitFn) {
-    // ...
-  });
-  ```
-
- - **lockfn.caching**
-   a returned function will store multiple callbacks and to each of them will return a value that is once-only generated by the first call. 'useful for making single request to a web resource that may return data needed by multiple functions.
-
-  the following would print `15`, then (immediately) `15`:
-
-  ```javascript
-  fn = function onval (err, val) { console.log(null, val); };
-  lock = lockfn.caching.getNew();
-  lock(fn, function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 15); }, 200);
-  });
-  lock(fn, function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 10); }, 200);
-  }); 
-  ```
- 
-  this object also returns a function that will associate callbacks with a given namespace.
-
-  the following would print `15`, then (immediately) `15`:
- 
-  ```javascript
-  fn = function onval (err, val) { console.log(null, val); };
-  lock = lockfn.caching.getNamespaceNew();
-  lock('address', fn, function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 15); }, 200);
-  });
-  lock('country', function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 10); }, 200);
-  }); 
-  lock('address', function getval (exitFn) {
-    setTimeout(function () { exitFn(null, 19); }, 200);
-  });
-  ```
+   The following would print 'rain', 'spain', then 'plain': 
+   ```javascript 
+   lockthrottle = lockfn.throttling({ ms : 500 });
+   lockthrottle(function () { console.log('rain') });  // rain
+   lockthrottle(function () { console.log('in') });
+   lockthrottle(function () { console.log('spain') }); // spain
+   lockthrottle(function () {
+     setTimeout(function () {
+       console.log('plain') };                         // plain
+     }, 600)
+   });
+   ```
   
-  ... and both have _default_ uses which assumes 'onval' function never changes
-  ```javascript
-  lock = lockfn.caching(function (err, val) {
-    console.log('final val is ', val);
-  });
-  lock(function (exitFn) {
-    setTimeout(function () { exitFn(null, 15); }, 200);
-  });
-  lock(function (exitFn) {
-    setTimeout(function () { exitFn(null, 10); }, 200);
-  });
-  ```
-  ```javascript
-  lock = lockfn.caching.namespace(function (err, val) {
-    console.log('final val is ', val);
-  });
-  lock('country', function (exitFn) {
-    setTimeout(function () { exitFn(null, 15); }, 200);
-  });
-  lock('address', function (exitFn) {
-    setTimeout(function () { exitFn(null, 10); }, 200);
-  });
-  ```
+---------------------------------------------------------
+### <a id="how"></a>How:
+
+Locks here are simple but effective due to the execution model found in [various][1] ECMAScript environments. Messages are handled in a queue sequentially, protecting the space in one lock call from following and previous calls.
+
+[1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
 
 ---------------------------------------------------------
 
-#### <a id="license">License:
+### <a id="license">License:
 
 ![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png) 
 
 (The MIT License)
 
-Copyright (c) 2013 [Bumblehead][0] <chris@bumblehead.com>
+Copyright (c) 2013,2014,2015 [Bumblehead][0] <chris@bumblehead.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

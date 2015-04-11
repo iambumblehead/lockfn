@@ -1,8 +1,8 @@
-var LockFnQueuing = require('../lib/lockfnqueuing');
+var lockfnqueuing = require('../lib/lockfnqueuing');
 
-describe("LockFnQueuing", function () {
+describe("lockfnqueuing.getNew", function () {
   it("should call a queue of functions, one after another", function (done) {
-    var lockFnQueuing = LockFnQueuing.getNew();
+    var lockFnQueuing = lockfnqueuing.getNew();
     var dummyFn = function () {};
     var count = 0;
 
@@ -33,36 +33,69 @@ describe("LockFnQueuing", function () {
     }, 1000);
   });
 
+});
+
+describe("lockfnqueuing", function () {
   it("should call a queue of functions, one after another, using as constructor", function (done) {
-    var count = 0;    
-    var lockFnQueuing = LockFnQueuing(function onval (err, res) {
-      //console.log('on val is ' + err, res);
+    var count = 0,
+        invalidresult = false;
+
+    var lock = lockfnqueuing(function getval (fn) {
+      setTimeout(function () {    
+        fn(null, ++count);
+      }, 400);
     });
 
-    lockFnQueuing(function getval (fn) {
-      setTimeout(function () {    
-        if (count === 0) count++;
-        fn(count++);
-      }, 200);
+    lock(function getval (err, res) {
+      if (res !== 1) invalidresult = true;
     });
 
-    lockFnQueuing(function getval (fn) {
-      setTimeout(function () {    
-        if (count === 1) count++;
-        fn(count);
-      }, 300);
+    lock(function getval (err, res) {
+      if (res !== 2) invalidresult = true;
     });
 
-    lockFnQueuing(function getval (fn) {
+    setTimeout(function () {
+      if (count !== 0) invalidresult = true;
+    }, 350);
+
+    setTimeout(function () {
+      if (count !== 1) invalidresult = true;
+    }, 450);
+
+    setTimeout(function () {
+      if (count !== 1) invalidresult = true;
+    }, 750);
+
+    setTimeout(function () {
+      if (count !== 2) invalidresult = true;
+    }, 850);
+
+    setTimeout(function () {    
+      expect( count ).toBe( 2 );
+      expect( invalidresult ).toBe( false );
+      done();
+    }, 1000);
+  });
+
+
+  it("should allow any number of params as long as last param is callback", function (done) {
+    var count = 0,
+        invalidresult = false;
+
+    var lock = lockfnqueuing(function getval (_, __, fn) {
       setTimeout(function () {    
-        if (count === 2) count++;
-        fn(count);
-      }, 100);
+        fn(null, ++count);
+      }, 400);
+    });
+
+    lock(null, null, function getval (err, res) {
+      if (res !== 1) invalidresult = true;
     });
 
     setTimeout(function () {    
-      expect( count ).toBe( 3 );
+      expect( count ).toBe( 1 );
+      expect( invalidresult ).toBe( false );
       done();
-    }, 1000);
+    }, 5000);
   });
 });
