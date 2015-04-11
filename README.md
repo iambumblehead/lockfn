@@ -184,9 +184,10 @@ $ git clone https://github.com/iambumblehead/lockfn.git
 ---------------------------------------------------------
 ### <a id="how"></a>How:
 
-Locks here are simple but effective due to the execution model found in [various][1] ECMAScript environments. Messages are handled in a queue sequentially, protecting the space in one lock call from following and previous calls.
+Locks here are simple but effective due to the execution model found in [various][1] [ECMAScript][2] environments. Messages are handled in a queue sequentially, protecting the space in one lock call from following and previous calls.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
+[2]: http://nikhilm.github.io/uvbook/eventloops.html
 
 ---------------------------------------------------------
 
