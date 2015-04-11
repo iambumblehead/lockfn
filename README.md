@@ -22,17 +22,17 @@ The default function defined on each lock is a convenient '_default_' function w
 
 lockfn may be downloaded directly or installed through `npm`.
 
- * **npm**   
+**npm**
 
- ```bash
- $ npm install lockfn
- ```
+```bash
+$ npm install lockfn
+```
 
- * **Direct Download**
+**Direct Download**
  
- ```bash  
- $ git clone https://github.com/iambumblehead/lockfn.git
- ```
+```bash
+$ git clone https://github.com/iambumblehead/lockfn.git
+```
 
 ---------------------------------------------------------
 #### <a id="objects">OBJECTS:
