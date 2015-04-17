@@ -8,6 +8,7 @@ A collection of function locks. Each returns a function through which asynchrono
 
  * [`lockfn.queuing`](#queuing)
  * [`lockfn.caching`](#caching)
+ * [`lockfn.expiring`](#expiring) 
  * [`lockfn.rebounding`](#rebounding)
  * [`lockfn.throttling`](#throttling)
 
@@ -116,6 +117,14 @@ $ git clone https://github.com/iambumblehead/lockfn.git
    gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
      console.log(tpl);      // <b>puedo ir al bano</b>
    });
+   ```
+
+ - <a id="queuing"></a>**lockfn.expiring**
+   Auto-call a function after given period of time has passed. If a function waits on a response from a server -auto-call that function after a few seconds (and do not allow future calls to the function).
+   ```javascript
+   lockfn.expiring(function callmeafter5sec () {
+     console.log('called in 5 seconds or less');
+   }, 5000);
    ```
 
  - <a id="queuing"></a>**lockfn.queuing**
