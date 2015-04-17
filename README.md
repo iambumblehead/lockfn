@@ -119,7 +119,7 @@ $ git clone https://github.com/iambumblehead/lockfn.git
    });
    ```
 
- - <a id="queuing"></a>**lockfn.expiring**
+ - <a id="expiring"></a>**lockfn.expiring**
    Auto-call a function after given period of time has passed. If a function waits on a response from a server -auto-call that function after a few seconds (and do not allow future calls to the function).
    ```javascript
    lockfn.expiring(function callmeafter5sec () {
@@ -153,25 +153,24 @@ $ git clone https://github.com/iambumblehead/lockfn.git
  
  - <a id="rebounding"></a>**lockfn.rebounding**
    A returned function handles one call, ignoring other calls until the first returns. Useful for handling form submit events, where a form should be submitted once only amid multiple submit events.
+
+   Like [`lockfn.caching`](#caching), a callback is given as the _last_ parameter but is not required.
   ```javascript
   // the following would print 'submit one' only
-  lockrebound = lockfn.rebounding();
-  lockrebound(function (exitfn) {
+  rebound = lockrebound(function (arg1, arg2, exitfn) {
     setTimeout(function () { 
       console.log('submit one');  // submit one
-      exitfn() 
+      exitfn(1, 2) 
     }, 200);
   });
-  lockrebound(function (exitfn) {
-    setTimeout(function () { 
-      console.log('submit two');
-      exitfn() 
-    }, 100);
-  }); 
-  lockrebound(function (exitfn) {
-    console.log('submit three');
-    exitfn() 
+  rebound('a', 'b', function (num1, num2) {
+    console.log(num1, num2); // 1 2
   });
+  rebound('a', 'b', function (num1, num2) {
+    console.log(num1, num2); // not called
+  });
+  rebound('a', 'b'); // not called
+  setTimeout(function () { rebound('a', 'b'); }, 220); // is called
   ```
 
  - <a id="throttling"></a>**lockfn.throttling**
