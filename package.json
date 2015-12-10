@@ -1,6 +1,7 @@
 {
   "name": "lockfn",
-  "version": "0.1.5",
+  "main": "lockfn",
+  "version": "0.1.7",
   "license" : "MIT",
   "repository": {
     "type": "git",

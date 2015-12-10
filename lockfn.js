@@ -14,7 +14,7 @@ var lockfncaching = require('./lib/lockfncaching'),
     lockfnrebounding = require('./lib/lockfnrebounding'),
     lockfnthrottling = require('./lib/lockfnthrottling');
 
-var lockfn = ((typeof module === 'object') ? module : {}).exports = {
+var lockfn = module.exports = {
   queuing : lockfnqueuing,
   caching : lockfncaching,
   expiring : lockfnexpiring,
