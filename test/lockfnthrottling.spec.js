@@ -1,3 +1,7 @@
+// Filename: lockfnthrottling.spec.js  
+// Timestamp: 2016.01.04-13:14:21 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>
+
 var LockFnThrottling = require('../lib/lockfnthrottling');
 
 describe("LockFnThrottling", function () {
@@ -42,6 +46,23 @@ describe("LockFnThrottling", function () {
       expect( count ).toBe( 2 );
       done();
     }, 600);
+  });
+
+  it("should provide an interface for single throttled function during time period (400ms)", function (done) {
+    var count = 0;
+    var lockFnThrottling = LockFnThrottling({ ms : 500 }, function (num) {
+      count += num;
+    });
+    
+
+    lockFnThrottling(5);
+    lockFnThrottling(3);
+    lockFnThrottling(1);
+
+    setTimeout(function () {    
+      expect( count ).toBe( 5 );
+      done();
+    }, 300);
   });
 
 });
