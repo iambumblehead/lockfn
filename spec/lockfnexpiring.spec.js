@@ -1,21 +1,18 @@
+import test from 'ava';
+import lockfnexpiring from '../lib/lockfnexpiring.js';
 
-var lockfnexpiring = require('../lib/lockfnexpiring');
+test.cb("lockfnexpiring should expire the function after given amount of time", t => {
+  var x = 0;
+  var f = lockfnexpiring(function () {
+    x++;
+  }, 2000);
 
-describe("lockfnexpiring", function () {
-  it("should expire the function after given amount of time", function (done) {
+  setTimeout(function () {
+    t.is(x, 0);
+  }, 1600);
 
-    var x = 0;
-    var f = lockfnexpiring(function () {
-      x++;
-    }, 2000);
-
-    setTimeout(function () {
-      expect(x).toBe(0);
-    }, 1600);
-
-    setTimeout(function () {
-      expect(x).toBe(1);
-      done();
-    }, 2400);
-  });
+  setTimeout(function () {
+    t.is(x, 1);
+    t.end();
+  }, 2400);
 });

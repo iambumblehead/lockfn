@@ -1,8 +1,9 @@
 {
   "name": "lockfn",
-  "main": "lockfn",
-  "version": "0.2.4",
-  "license" : "MIT",
+  "main": "lockfn.js",
+  "version": "0.3.0",
+  "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/iambumblehead/lockfn.git"
@@ -19,12 +20,11 @@
     "gate",
     "callback"
   ],
-  "devDependencies" : {
-    "jasmine": "2.5.3",
-    "jasmine-spec-reporter": "3.2.0"    
+  "devDependencies": {
+    "ava": "^3.6.0"
   },
-  "scripts" : {
-    "test": "node node_modules/jasmine/bin/jasmine.js --verbose"    
+  "scripts": {
+    "test": "ava"
   },
   "readmeFilename": "README.md",
   "description": "Collection of function locking objects."

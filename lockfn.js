@@ -2,13 +2,13 @@
 // Timestamp: 2017.04.25-00:04:25 (last modified)
 // Author(s): Bumblehead (www.bumblehead.com)
 
-var lockfncaching = require('./lib/lockfncaching'),
-    lockfnqueuing = require('./lib/lockfnqueuing'),
-    lockfnexpiring = require('./lib/lockfnexpiring'),
-    lockfnrebounding = require('./lib/lockfnrebounding'),
-    lockfnthrottling = require('./lib/lockfnthrottling');
+import lockfncaching from './lib/lockfncaching.js';
+import lockfnqueuing from './lib/lockfnqueuing.js';
+import lockfnexpiring from './lib/lockfnexpiring.js';
+import lockfnrebounding from './lib/lockfnrebounding.js';
+import lockfnthrottling from './lib/lockfnthrottling.js';
 
-const lockfn = module.exports = {
+export default {
   queuing : lockfnqueuing,
   caching : lockfncaching,
   expiring : lockfnexpiring,

@@ -1,10 +1,8 @@
 lockfn
 ======
-**(c)[Bumblehead][0], 2013,2014,2015** [MIT-license](#license)
+**(c)[Bumblehead][0]** [MIT-license](#license)
 
-## OVERVIEW:
-
-A collection of function locks. Each returns a function through which asynchronous code may be controlled. 
+A collection of function locks through which asynchronous code may be controlled. 
 
  * [`lockfn.queuing`](#queuing)
  * [`lockfn.caching`](#caching)
@@ -14,21 +12,6 @@ A collection of function locks. Each returns a function through which asynchrono
 
 [0]: http://www.bumblehead.com                            "bumblehead"
 
----------------------------------------------------------
-### <a id="install"></a>INSTALL:
-
-**npm**
-```bash
-$ npm install lockfn
-```
-
-**direct download**
-```bash
-$ git clone https://github.com/iambumblehead/lockfn.git
-```
-
----------------------------------------------------------
-### <a id="objects"></a>Objects:
 
  - <a id="caching"></a>**lockfn.caching**
    Most common lock. Obtain data _once_ for multiple callers.
@@ -197,15 +180,12 @@ Locks here are simple but effective due to the execution model found in [various
 [1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
 [2]: http://nikhilm.github.io/uvbook/eventloops.html
 
----------------------------------------------------------
-
-### <a id="license">License:
 
 ![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png) 
 
 (The MIT License)
 
-Copyright (c) 2013,2014,2015 [Bumblehead][0] <chris@bumblehead.com>
+Copyright (c) [Bumblehead][0] <chris@bumblehead.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
