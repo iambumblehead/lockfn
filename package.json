@@ -4,9 +4,19 @@
   "version": "0.3.0",
   "license": "MIT",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./lockfn.js"
+    },
+    "./caching": "./lib/lockfncaching.js",
+    "./expiring": "./lib/lockfnexpiring.js",
+    "./queuing": "./lib/lockfnqueuing.js",
+    "./rebounding": "./lib/lockfnrebounding.js",
+    "./throttling": "./lib/lockfnthrottling.js"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/iambumblehead/lockfn.git"
+    "url": "git+https://github.com/iambumblehead/lockfn.git"
   },
   "keywords": [
     "caching",
