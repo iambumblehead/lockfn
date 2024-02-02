@@ -1,7 +1,7 @@
 {
   "name": "lockfn",
   "main": "lockfn.js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -31,7 +31,7 @@
     "callback"
   ],
   "devDependencies": {
-    "ava": "^3.6.0"
+    "ava": "^6.1.1"
   },
   "scripts": {
     "test": "ava"
