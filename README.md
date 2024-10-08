@@ -18,18 +18,18 @@ A collection of function locks through which asynchronous code may be controlled
 
    A template applied to each item of a list view will be requested _once only_:
    ```javascript
-   gettpl = function (tplname, fn) {
-     server_request(tplname, function (err, tpl) {
+   gettpl = (tplname, fn) => {
+     server_request(tplname, (err, tpl) => {
         fn(err, tpl); // tpl is '<b>tpl</b>'
      });
    };
-   gettplcache = lockfn.caching(function (tplname, fn) {
+   gettplcache = lockfn.caching((tplname, fn) => {
      gettpl(tplname, fn)
    };
-   gettplcache('listitem.mustache', function (err, tpl) {
+   gettplcache('listitem.mustache', (err, tpl) => {
      console.log('tpl is ' + tpl);        // tpl is <b>item</b>
    });
-   gettplcache('listitem.mustache', function (err, tplcached) {
+   gettplcache('listitem.mustache', (err, tplcached) => {
      console.log('tpl is ' + tplcached);  // tpl is <b>item</b>
    });
    ```
@@ -46,58 +46,58 @@ A collection of function locks through which asynchronous code may be controlled
    //   param given before the callback. Here 'lakelistitem.mustache' returns a
    //   cached value to calls for 'lakelistitem.mustache'. A different value is
    //   requested and cached for 'countrylistitem.mustache':
-   gettplcache = lockfn.caching.namespace(function (tplname, fn) {
+   gettplcache = lockfn.caching.namespace((tplname, fn) => {
      gettpl(tplname, fn)
    };
-   gettplcache('lakelistitem.mustache', function (err, tpl) {
+   gettplcache('lakelistitem.mustache', (err, tpl) => {
      console.log('tpl is ' + tpl);       // tpl is <b>lake</b>
    });
-   gettplcache('lakelistitem.mustache', function (err, tplcached) {
+   gettplcache('lakelistitem.mustache', (err, tplcached) => {
      console.log('tpl is ' + tplcached); // tpl is <b>lake</b>
    });
-   gettplcache('countrylistitem.mustache', function (err, ctpl) {
+   gettplcache('countrylistitem.mustache', (err, ctpl) => {
      console.log('tpl is ' + tpl);       // tpl is <b>country</b>
    });
-   gettplcache('countrylistitem.mustache', function (err, ctplcached) {
+   gettplcache('countrylistitem.mustache', (err, ctplcached) => {
      console.log('tpl is ' + tplcached); // tpl is <b>country</b>
    });
    ```
  
    Use multiple params with functions returned by `lockfn.caching` and `lockfn.caching.namespace`. Both require a callback as _last_ parameter. `lockfn.caching.namespace` requires a string as the _second-to-last_  parameter (a namespace for which the cache is held).
    ```javascript
-   gettplcache = lockfn.caching.namespace(function (session, cfg, tplname, fn) {
+   gettplcache = lockfn.caching.namespace((session, cfg, tplname, fn) => {
      gettpl(tplname, fn)
    };
-   gettplcache(session, cfg, 'nav.mustache', function (err, tpl) {
+   gettplcache(session, cfg, 'nav.mustache', (err, tpl) => {
      console.log('tpl is ' + tpl);      // tpl is <b>nav</b>
    });
-   gettplcache(session, cfg, 'nav.mustache', function (err, tplcache) {
+   gettplcache(session, cfg, 'nav.mustache', (err, tplcache) => {
      console.log('tpl is ' + tplcache); // tpl is <b>nav</b>
    });
-   gettplcache(session, cfg, 'foot.mustache', function (err, tplcache) {
+   gettplcache(session, cfg, 'foot.mustache', (err, tplcache) => {
      console.log('tpl is ' + tplcache); // tpl is <b>foot</b>
    });
    ```
 
    Clear the cache and request the template anew
    ```javascript
-   gettplcache = lockfn.caching.namespace(function (session, cfg, tplname, fn) {
+   gettplcache = lockfn.caching.namespace((session, cfg, tplname, fn) => {
      gettpl(tplname, fn)
    };
    session = 'english';
-   gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
+   gettplcache(session, cfg, 'bathroom.mustache', (err, tpl) => {
      console.log(tpl);      // <b>i need the bathroom</b>
    });
    session = 'spanish';
-   gettplcache(session, cfg, 'bathroom.mustache', function (err, tplcache) {
+   gettplcache(session, cfg, 'bathroom.mustache', (err, tplcache) => {
      console.log(tplcache); // <b>i need the bathroom</b>
    });
    gettplcache.clear();
-   gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
+   gettplcache(session, cfg, 'bathroom.mustache', (err, tpl) => {
      console.log(tpl);      // <b>puedo ir al bano</b>
    });
    session = 'english';
-   gettplcache(session, cfg, 'bathroom.mustache', function (err, tpl) {
+   gettplcache(session, cfg, 'bathroom.mustache', (err, tpl) => {
      console.log(tpl);      // <b>puedo ir al bano</b>
    });
    ```
@@ -113,23 +113,23 @@ A collection of function locks through which asynchronous code may be controlled
  - <a id="queuing"></a>**lockfn.queuing**
    Avoid stack overflow. Control caller access to a function that adds numerous frames to the stack by queuing calls so each completes before next begins:
   ```javascript
-  getdecryptedblobqueue = lockfn.queuing(function (cipher, fn) {
+  getdecryptedblobqueue = lockfn.queuing((cipher, fn) => {
     fn(null, busydecryption(cipher)); // busydecryption adds numerous frames
   });
-  getdecryptedblobqueue(cipher, function (plain) {
+  getdecryptedblobqueue(cipher, (plain) => {
     console.log(plain); // long string
   });
-  getdecryptedblobqueue(cipher, function (plain) {
+  getdecryptedblobqueue(cipher, (plain) => {
     console.log(plain); // long string
   }); 
   ```
 
   Like [`lockfn.caching`](#caching), a callback is required as the _last_ parameter. Other params given in calls to the lock are passed to the function the lock was constructed around.
   ```javascript
-  getdecryptedblobqueue = lockfn.queuing(function (cipher, key, type, fn) {
+  getdecryptedblobqueue = lockfn.queuing((cipher, key, type, fn) => {
     fn(null, busydecryption(cipher, key, type));
   });
-  getdecryptedblobqueue(cipher, key, type, function (plain) {
+  getdecryptedblobqueue(cipher, key, type, (plain) => {
     console.log(plain); // long string
   });
   ```
@@ -140,20 +140,20 @@ A collection of function locks through which asynchronous code may be controlled
    Like [`lockfn.caching`](#caching), a callback is given as the _last_ parameter but is not required.
   ```javascript
   // the following would print 'submit one' only
-  rebound = lockrebound(function (arg1, arg2, exitfn) {
+  rebound = lockrebound((arg1, arg2, exitfn) => {
     setTimeout(function () { 
       console.log('submit one');  // submit one
       exitfn(1, 2) 
     }, 200);
   });
-  rebound('a', 'b', function (num1, num2) {
+  rebound('a', 'b', (num1, num2) => {
     console.log(num1, num2); // 1 2
   });
-  rebound('a', 'b', function (num1, num2) {
+  rebound('a', 'b', (num1, num2) => {
     console.log(num1, num2); // not called
   });
   rebound('a', 'b'); // not called
-  setTimeout(function () { rebound('a', 'b'); }, 220); // is called
+  setTimeout(() => { rebound('a', 'b'); }, 220); // is called
   ```
 
  - <a id="throttling"></a>**lockfn.throttling**
@@ -162,11 +162,11 @@ A collection of function locks through which asynchronous code may be controlled
    The following would print 'rain', 'spain', then 'plain': 
    ```javascript 
    lockthrottle = lockfn.throttling({ ms : 500 });
-   lockthrottle(function () { console.log('rain') });  // rain
-   lockthrottle(function () { console.log('in') });
-   lockthrottle(function () { console.log('spain') }); // spain
-   lockthrottle(function () {
-     setTimeout(function () {
+   lockthrottle(() => { console.log('rain') });  // rain
+   lockthrottle(() => { console.log('in') });
+   lockthrottle(() => { console.log('spain') }); // spain
+   lockthrottle(() => {
+     setTimeout(() => {
        console.log('plain') };                         // plain
      }, 600)
    });
@@ -175,13 +175,13 @@ A collection of function locks through which asynchronous code may be controlled
 ---------------------------------------------------------
 ### <a id="how"></a>How:
 
-Locks here are simple but effective due to the execution model found in [various][1] [ECMAScript][2] environments. Messages are handled in a queue sequentially, protecting the space in one lock call from following and previous calls.
+Locks here are simple but effective due to the execution model found in [various][1] [ECMAScript][2] environments. Messages are handled in a queue sequentially, protecting the space in one lock call from calls made before or afterward.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
 [2]: http://nikhilm.github.io/uvbook/eventloops.html
 
 
-![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png) 
+![scrounge](https://github.com/iambumblehead/scroungejs/raw/main/img/hand.png) 
 
 (The MIT License)
 
