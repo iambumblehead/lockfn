@@ -1,7 +1,9 @@
-import test from 'ava';
+import util from 'node:util'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import lockfnqueuing from '../lib/lockfnqueuing.js';
 
-test.cb("lockfnqueuing.getNew should call a queue of functions, one after another", t => {
+test("lockfnqueuing.getNew should call a queue of functions, one after another", async () => {
   var lockFnQueuing = lockfnqueuing.getNew();
   var dummyFn = function () {};
   var count = 0;
@@ -27,13 +29,16 @@ test.cb("lockfnqueuing.getNew should call a queue of functions, one after anothe
     }, 100);
   });
 
-  setTimeout(function () {    
-    t.is( count, 3 );
-    t.end();
-  }, 1000);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 3 );
+
+      resolve()
+    }, 1000);
+  })
 });
 
-test.cb("lockfnqueuing should call a queue of functions, one after another, using as constructor", t => {
+test("lockfnqueuing should call a queue of functions, one after another, using as constructor", async () => {
   var count = 0,
       invalidresult = false;
 
@@ -67,14 +72,17 @@ test.cb("lockfnqueuing should call a queue of functions, one after another, usin
     if (count !== 2) invalidresult = true;
   }, 850);
 
-  setTimeout(function () {    
-    t.is( count, 2 );
-    t.is( invalidresult, false );
-    t.end();
-  }, 1000);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 2 );
+      assert.strictEqual( invalidresult, false );
+
+      resolve()
+    }, 1000);
+  })
 });
 
-test.cb("lockfnqueuing should allow any number of params as long as last param is callback", t => {
+test("lockfnqueuing should allow any number of params as long as last param is callback", async () => {
   var count = 0,
       invalidresult = false;
 
@@ -88,9 +96,12 @@ test.cb("lockfnqueuing should allow any number of params as long as last param i
     if (res !== 1) invalidresult = true;
   });
 
-  setTimeout(function () {    
-    t.is( count, 1 );
-    t.is( invalidresult, false );
-    t.end();
-  }, 5000);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 1 );
+      assert.strictEqual( invalidresult, false );
+
+      resolve()
+    }, 5000);
+  })
 });

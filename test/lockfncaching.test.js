@@ -1,47 +1,48 @@
 // Filename: lockfncaching.spec.js  
 // Timestamp: 2015.04.11-03:30:01 (last modified)  
 // Author(s): Bumblehead (www.bumblehead.com)  
-
-import test from 'ava';
+import util from 'node:util'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import lockfncaching from '../lib/lockfncaching.js';
 
-test.cb("lockfncaching.getNew should call onValFn with the value from getValFn", t => {
-  var fncaching = lockfncaching.getNew();
-  var count = 0;
-  var onValFn = function (err, val) {
-    t.is( val, 3 );
-    t.end();
-  };
+test("lockfncaching.getNew should call onValFn with the value from getValFn", () => {
+  const fncaching = lockfncaching.getNew()
+  const onValFn = (err, val) => {
+    assert.equal( val, 3 )
+  }
 
-  fncaching(onValFn, function getValFn (exitFn) {
+  util.promisify(fncaching)(onValFn, exitFn => {
     exitFn(null, 3);
   });
 });
 
-test.cb("lockfncaching.getNew should call onValFn with the value from first getValFn returning value", t => {
+test("lockfncaching.getNew should call onValFn with the value from first getValFn returning value", async () => {
   var fncaching = lockfncaching.getNew();
   var count = 0;
   var onValFn = function (err, val) {
     count += val;
   };
 
-  fncaching(onValFn, function getValFn (exitFn) {
+  util.promisify(fncaching)(onValFn, function getValFn (exitFn) {
     exitFn(null, 3);
   });
 
-  fncaching(onValFn, function getValFn (exitFn) {
+  util.promisify(fncaching)(onValFn, function getValFn (exitFn) {
     count += 5;
     exitFn(null, 4);
   });
 
-  setTimeout(function () {    
-    t.is( count, 6 );      
-    t.end();
-  }, 200);
-});
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.equal(count, 6)
 
+      resolve('ok')
+    }, 200);
+  })
+})
 
-test.cb("lockfncaching should call onValFn with the value from first getValFn returning value using default constructor", t => {
+test("lockfncaching should call onValFn with the value from first getValFn returning value using default constructor", async () => {
   var fncaching,
       onvalcallcount = 0,
       getvalcallcount = 0,
@@ -88,20 +89,22 @@ test.cb("lockfncaching should call onValFn with the value from first getValFn re
   });
   
 
-  setTimeout(function () {    
-    t.is( onvalcallcount, 6 );      
-    t.is( getvalcallcount, 2 );      
-    t.is( invalidresult, false );      
-    t.end();
-  }, 800);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( onvalcallcount, 6 );      
+      assert.strictEqual( getvalcallcount, 2 );      
+      assert.strictEqual( invalidresult, false );      
+
+      resolve()
+    }, 800);
+  })
 });
 
-test.cb("lockfncaching.getNamespaceNew should call onValFn with the value from getValFn", t => {
+test("lockfncaching.getNamespaceNew should call onValFn with the value from getValFn", async () => {
   var fncaching = lockfncaching.getNamespaceNew();
   var count = 0;
   var onValFn = function (err, val) {
-    t.is( val, 3 );      
-    t.end();
+    assert.strictEqual( val, 3 );
   };
 
   fncaching('namespace1', onValFn, function getValFn (exitFn) {
@@ -109,7 +112,7 @@ test.cb("lockfncaching.getNamespaceNew should call onValFn with the value from g
   });
 });
 
-test.cb("lockfncaching.getNamespaceNew should call onValFn1 with the value from getValFn, namespace '1'", t => {
+test("lockfncaching.getNamespaceNew should call onValFn1 with the value from getValFn, namespace '1'", async () => {
   var fncaching = lockfncaching.getNamespaceNew();
   var count = 0;
   var onValFn1 = function (err, val) {
@@ -127,13 +130,16 @@ test.cb("lockfncaching.getNamespaceNew should call onValFn1 with the value from 
     exitFn(null, 3);
   });
 
-  setTimeout(function () {    
-    t.is( count, 12 );      
-    t.end();
-  }, 200);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 12 );
+
+      resolve()
+    }, 200);
+  })
 });
 
-test.cb("lockfncaching.getNamespaceNew 2 should call onValFn1 with the value from getValFn, namespace '1'", t => {  
+test("lockfncaching.getNamespaceNew 2 should call onValFn1 with the value from getValFn, namespace '1'", async () => {  
   var fncaching = lockfncaching.getNamespaceNew();
   var count = 0;
   var onValFn1 = function (err, val) {
@@ -151,13 +157,16 @@ test.cb("lockfncaching.getNamespaceNew 2 should call onValFn1 with the value fro
     exitFn(null, 3);
   });
 
-  setTimeout(function () {    
-    t.is( count, 9 );      
-    t.end();
-  }, 200);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 9 );
+
+      resolve()
+    }, 200);
+  })
 });
 
-test.cb("lockfncaching.namespace should call onValFn1 with the value from getValFn, namespace '1' using default constructor", t => {  
+test("lockfncaching.namespace should call onValFn1 with the value from getValFn, namespace '1' using default constructor", async () => {  
   var fncaching,
       onvalcallcount = 0,
       getvalcallcount = 0,
@@ -206,10 +215,13 @@ test.cb("lockfncaching.namespace should call onValFn1 with the value from getVal
   fncaching.clear();
   //fncaching.lock = lockfncaching.getNamespaceNew();
 
-  setTimeout(function () {    
-    t.is( onvalcallcount, 6 );      
-    t.is( getvalcallcount, 4 );      
-    t.is( invalidresult, false );      
-    t.end();
-  }, 800);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( onvalcallcount, 6 );      
+      assert.strictEqual( getvalcallcount, 4 );      
+      assert.strictEqual( invalidresult, false );      
+
+      resolve()
+    }, 800);
+  })
 });

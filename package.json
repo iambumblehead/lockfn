@@ -1,7 +1,9 @@
 {
   "name": "lockfn",
   "main": "lockfn.js",
-  "version": "0.3.1",
+  "version": "0.4.0",
+  "description": "Collection of function locking objects.",
+  "readmeFilename": "README.md",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -18,6 +20,10 @@
     "type": "git",
     "url": "git+https://github.com/iambumblehead/lockfn.git"
   },
+  "files": [
+    "lib",
+    "lockfn.js"
+  ],
   "keywords": [
     "caching",
     "debounce",
@@ -30,12 +36,7 @@
     "gate",
     "callback"
   ],
-  "devDependencies": {
-    "ava": "^6.1.1"
-  },
   "scripts": {
-    "test": "ava"
-  },
-  "readmeFilename": "README.md",
-  "description": "Collection of function locking objects."
+    "test": "node --test"
+  }
 }

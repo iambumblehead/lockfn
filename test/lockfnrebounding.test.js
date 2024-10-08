@@ -1,7 +1,9 @@
-import test from 'ava';
+import util from 'node:util'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import lockfnrebounding from '../lib/lockfnrebounding.js';
 
-test.cb("should rebound calls if first call is not finished", t => {
+test("should rebound calls if first call is not finished", async () => {
   var lockFnRebounding = lockfnrebounding.getNew(),
       count = 0;
 
@@ -17,13 +19,16 @@ test.cb("should rebound calls if first call is not finished", t => {
     exitFn();
   });
 
-  setTimeout(function () {    
-    t.is( count, 1 );
-    t.end();
-  }, 500);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 1 );
+
+      resolve()
+    }, 500);
+  })
 });
 
-test.cb("should accept calls after first call is not finished", t => {
+test("should accept calls after first call is not finished", async () => {
   var lockFnRebounding = lockfnrebounding.getNew(),
       count = 0;
 
@@ -41,13 +46,16 @@ test.cb("should accept calls after first call is not finished", t => {
     });
   }, 300);
 
-  setTimeout(function () {    
-    t.is( count, 2 );
-    t.end();
-  }, 500);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 2 );
+
+      resolve()
+    }, 500);
+  })
 });
 
-test.cb("should not require a callback", t => {
+test("should not require a callback", async () => {
   var count = 0;
   var reboundfn = lockfnrebounding(function (fn) {
     count++;
@@ -59,13 +67,16 @@ test.cb("should not require a callback", t => {
   reboundfn();
   reboundfn();
 
-  setTimeout(function () {    
-    t.is( count, 1 );
-    t.end();
-  }, 200);
+  await new Promise(resolve => {
+    setTimeout(function () {
+      assert.strictEqual( count, 1 );
+
+      resolve()
+    }, 200)
+  })
 });
 
-test.cb("should not require a callback, longer", t => {
+test("should not require a callback, longer", async () => {
   var count = 0;
   var reboundfn = lockfnrebounding(function (exitFn) {
     count++;
@@ -79,13 +90,16 @@ test.cb("should not require a callback, longer", t => {
 
   setTimeout(reboundfn, 300);
 
-  setTimeout(function () {    
-    t.is( count, 2 );
-    t.end();
-  }, 500);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 2 );
+
+      resolve()
+    }, 500);
+  })
 });
 
-test.cb("should call the callback will all arguments passed by caller", t => {
+test("should call the callback will all arguments passed by caller", async () => {
   var count = 0;
   var reboundfn = lockfnrebounding(function (a, b, c, exitFn) {
     count++;
@@ -101,13 +115,15 @@ test.cb("should call the callback will all arguments passed by caller", t => {
     reboundfn('a', 'b', 'c');
   }, 300);
 
-  setTimeout(function () {    
-    t.is( count, 2 );
-    t.end();
-  }, 500);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 2 );
+      resolve()
+    }, 500);
+  })
 });
 
-test.cb("should call 2 future callback will all arguments passed by caller", t => {
+test("should call 2 future callback will all arguments passed by caller", async () => {
   var count = 0;
   var reboundfn = lockfnrebounding(function (a, b, c, exitFn) {
     count++;
@@ -137,9 +153,12 @@ test.cb("should call 2 future callback will all arguments passed by caller", t =
     });
   }, 300);
 
-  setTimeout(function () {    
-    t.is( count, 4 );
-    t.end();
-  }, 600);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 4 );
+    
+      resolve()
+    }, 600);
+  })
 });
 
