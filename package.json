@@ -1,7 +1,7 @@
 {
   "name": "lockfn",
   "main": "lockfn.js",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Collection of function locking objects.",
   "readmeFilename": "README.md",
   "license": "MIT",
