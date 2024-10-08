@@ -1,21 +1,22 @@
 // Filename: lockfnthrottling.spec.js  
 // Timestamp: 2016.01.04-13:31:28 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
-
-import test from 'ava';
+import util from 'node:util'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import LockFnThrottling from '../lib/lockfnthrottling.js';
 
-test("LockFnThrottling should call a function only once for time period (400ms)", t => {
+test("LockFnThrottling should call a function only once for time period (400ms)", async () => {
   var lockFnThrottling = LockFnThrottling.getNew({ ms : 500 });
   var count = 0;
 
   lockFnThrottling(function () { count++; });
   lockFnThrottling(function () { count++; });
   
-  t.is( count, 1 );
+  assert.strictEqual( count, 1 );
 });
 
-test.cb("LockFnThrottling should call functions only once for time period (400ms)", t => {
+test("LockFnThrottling should call functions only once for time period (400ms)", async () => {
   var lockFnThrottling = LockFnThrottling.getNew({ ms : 500 });
   var count = 0;
 
@@ -27,14 +28,17 @@ test.cb("LockFnThrottling should call functions only once for time period (400ms
     lockFnThrottling(function () { count++; });    
   }, 200);
 
+  await new Promise(resolve => {
   setTimeout(function () {    
     lockFnThrottling(function () { count++; });    
-    t.is( count, 3 );
-    t.end();
+    assert.strictEqual( count, 3 );
+
+    resolve()
   }, 600);
+  })
 });
 
-test.cb("LockFnThrottling should call the last uncalled function during time period (400ms)", t => {
+test("LockFnThrottling should call the last uncalled function during time period (400ms)", async () => {
   var lockFnThrottling = LockFnThrottling.getNew({ ms : 500 });
   var count = 0;
 
@@ -42,13 +46,15 @@ test.cb("LockFnThrottling should call the last uncalled function during time per
   lockFnThrottling(function () { count += 6; });
   lockFnThrottling(function () { count++; });
 
-  setTimeout(function () {    
-    t.is( count, 2 );
-    t.end();
-  }, 600);
+  await new Promise(resolve => {
+    setTimeout(function () {    
+      assert.strictEqual( count, 2 );
+      resolve()
+    }, 600);
+  })
 });
 
-test.cb("LockFnThrottling should provide an interface for single throttled function during time period (400ms)", t => {
+test("LockFnThrottling should provide an interface for single throttled function during time period (400ms)", async () => {
   var count = 0;
   var lockFnThrottling = LockFnThrottling({
     ms : 500,
@@ -62,8 +68,11 @@ test.cb("LockFnThrottling should provide an interface for single throttled funct
   lockFnThrottling(3);
   lockFnThrottling(1);
 
-  setTimeout(function () {    
-    t.is( count, 5 );
-    t.end();
-  }, 600);
+  await new Promise(resolve => {
+    setTimeout(function () {
+      assert.strictEqual( count, 5 );
+
+      resolve()
+    }, 600);
+  })
 });

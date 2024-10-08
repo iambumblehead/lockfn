@@ -1,7 +1,7 @@
 {
   "name": "lockfn",
   "main": "lockfn.js",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Collection of function locking objects.",
   "readmeFilename": "README.md",
   "license": "MIT",
@@ -20,6 +20,10 @@
     "type": "git",
     "url": "git+https://github.com/iambumblehead/lockfn.git"
   },
+  "files": [
+    "lib",
+    "lockfn.js"
+  ],
   "keywords": [
     "caching",
     "debounce",
